@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package auth;
+
+service AuthService {
+  rpc SignIn (SignInRequest) returns (AuthResponse) {}
+  rpc SignUp (SignUpRequest) returns (AuthResponse) {}
+}
+
+// --- SignIn ---
+message SignInRequest {
+  string email = 1;
+  string password = 2;
+}
+
+// --- SignUp ---
+message SignUpRequest {
+  string email = 1;
+  string password = 2;
+  Name name = 3;
+  uint32 role_id = 4; // Используем uint32 вместо number (оптимизация под gRPC)
+
+  message Name {
+    string first_name = 1;
+    string last_name = 2;
+    optional string middle_name = 3; // Поле необязательное
+  }
+}
+
+// --- Успешный ответ ---
+message AuthResponse {
+  string access_token = 1;
+}
+
+// --- Ошибка ---
+message ErrorResponse {
+  string error = 1;
+  uint32 status = 2; // HTTP-статус код (например, 400, 500)
+  optional string stack_trace = 3; // Только для development
+}
